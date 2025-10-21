@@ -1,4 +1,4 @@
-import React from 'react'; // Import React if not already imported globally
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import { ChatProvider } from "./context/ChatContext";
@@ -7,12 +7,12 @@ import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import VerifyEmail from "./pages/VerifyEmail";
 import Profile from "./pages/Profile";
-// import SearchResults from "./pages/SearchResults"; // Roommate search removed from nav
+import SearchResults from "./pages/SearchResults"; // <-- IMPORTED (Roommate Search)
 import PropertiesPage from "./pages/PropertiesPage";
 import PropertyDetailPage from "./pages/PropertyDetailPage";
 import CreatePropertyPage from "./pages/CreatePropertyPage";
-import MyListingsPage from "./pages/MyListingsPage"; // <-- Page for user's listings
-import EditPropertyPage from "./pages/EditPropertyPage"; // <-- Page for editing listing
+import MyListingsPage from "./pages/MyListingsPage";
+import EditPropertyPage from "./pages/EditPropertyPage";
 import ChatPage from "./pages/ChatPage";
 import FloatingChatButton from "./components/FloatingChatButton";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -31,11 +31,12 @@ const AppContent = () => {
         <Route path="/verify/:token" element={<VerifyEmail />} />
         <Route path="/properties" element={<PropertiesPage />} />
         <Route path="/properties/:id" element={<PropertyDetailPage />} />
+        {/* --- ADD THIS ROUTE BACK --- */}
+        <Route path="/search" element={<SearchResults />} /> {/* Roommate Search */}
+        {/* --- END ADD --- */}
 
         {/* --- Protected Routes --- */}
-        {/* Use ProtectedRoute as the PARENT element */}
         <Route element={<ProtectedRoute />}>
-          {/* These routes are now CHILDREN of ProtectedRoute */}
           <Route path="/profile" element={<Profile />} />
           <Route path="/chat" element={<ChatPage />} />
           <Route path="/chat/:conversationId" element={<ChatPage />} />
@@ -45,7 +46,6 @@ const AppContent = () => {
         </Route>
 
       </Routes>
-      {/* Show FloatingChatButton ONLY IF logged in AND NOT on chat page */}
       {user && !isOnChatPage && <FloatingChatButton />}
     </>
   );
