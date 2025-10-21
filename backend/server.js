@@ -31,7 +31,9 @@ const io = new Server(server, {
 // For Stripe webhook: app.post("/api/payments/webhook", express.raw({type: 'application/json'}), handleWebhook);
 // For now, standard JSON parsing is fine for placeholders.
 app.use(cors({
-    origin: process.env.CLIENT_URL || "http://localhost:5173" // Allow requests from frontend
+    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true // Allow requests from frontend
 }));
 app.use(express.json()); // For parsing application/json
 
