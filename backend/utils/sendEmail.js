@@ -2,17 +2,20 @@ import nodemailer from "nodemailer";
 
 const sendEmail = async (to, subject, text) => {
   try {
-    // --- UPDATED TRANSPORTER CONFIGURATION ---
+    // --- UPDATED TRANSPORTER CONFIGURATION FOR PORT 587 ---
     const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com", // Explicitly specify Gmail's SMTP server
-      port: 465, // Use port 465 for SSL
-      secure: true, // Use SSL (true for port 465, false for port 587/TLS)
+      host: "smtp.gmail.com", // Gmail's SMTP server
+      port: 587, // Use port 587 for TLS
+      secure: false, // Use TLS (STARTTLS) - false for port 587
+      requireTLS: true, // Force TLS
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS, // Your Google App Password
       },
-      // Optional: Add connection timeout (e.g., 15 seconds) if default is too short
-      // connectionTimeout: 15000, 
+      // Optional: Increase timeout if needed, but the issue seems to be connection itself
+      // connectionTimeout: 20000, // 20 seconds
+      // logger: true, // Enable detailed logging from nodemailer (optional)
+      // debug: true, // Enable debug output (optional)
     });
     // --- END UPDATED CONFIGURATION ---
 
@@ -23,7 +26,7 @@ const sendEmail = async (to, subject, text) => {
         text,
     };
 
-    console.log(`Attempting to send email to: ${to} with subject: ${subject}`);
+    console.log(`Attempting to send email (via port 587) to: ${to} with subject: ${subject}`);
     console.log(`Using email user: ${process.env.EMAIL_USER}`);
 
     let info = await transporter.sendMail(mailOptions);
@@ -33,7 +36,6 @@ const sendEmail = async (to, subject, text) => {
 
   } catch (error) {
     console.error("!!! Error sending email:", error); // Log the full error
-    // Log specific details if available
     if (error.code) {
       console.error("Error Code:", error.code);
     }
