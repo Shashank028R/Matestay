@@ -1,35 +1,45 @@
 import nodemailer from "nodemailer";
 
 const sendEmail = async (to, subject, text) => {
-  try { // Added try...catch for better error handling
+  try {
+    // --- UPDATED TRANSPORTER CONFIGURATION ---
     const transporter = nodemailer.createTransport({
-      service: "gmail", // Or your service
+      host: "smtp.gmail.com", // Explicitly specify Gmail's SMTP server
+      port: 465, // Use port 465 for SSL
+      secure: true, // Use SSL (true for port 465, false for port 587/TLS)
       auth: {
         user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
+        pass: process.env.EMAIL_PASS, // Your Google App Password
       },
+      // Optional: Add connection timeout (e.g., 15 seconds) if default is too short
+      // connectionTimeout: 15000, 
     });
+    // --- END UPDATED CONFIGURATION ---
 
     const mailOptions = {
-        from: `"Matestay" <${process.env.EMAIL_USER}>`, // Ensure sender address is correct
+        from: `"Matestay" <${process.env.EMAIL_USER}>`,
         to,
         subject,
-        text, // Or use `html` for HTML emails
+        text,
     };
 
-    console.log(`Attempting to send email to: ${to} with subject: ${subject}`); // Log before sending
-    console.log(`Using email user: ${process.env.EMAIL_USER}`); // Log user (check if defined)
-    // DO NOT log EMAIL_PASS here for security
+    console.log(`Attempting to send email to: ${to} with subject: ${subject}`);
+    console.log(`Using email user: ${process.env.EMAIL_USER}`);
 
     let info = await transporter.sendMail(mailOptions);
 
-    console.log("Email sent successfully!"); // Log success
-    console.log("Message ID:", info.messageId); // Log message ID
-    // console.log("Preview URL:", nodemailer.getTestMessageUrl(info)); // Only for ethereal emails
+    console.log("Email sent successfully!");
+    console.log("Message ID:", info.messageId);
 
   } catch (error) {
     console.error("!!! Error sending email:", error); // Log the full error
-    // Re-throw the error so the calling function knows it failed
+    // Log specific details if available
+    if (error.code) {
+      console.error("Error Code:", error.code);
+    }
+    if (error.command) {
+      console.error("Error Command:", error.command);
+    }
     throw new Error(`Failed to send email: ${error.message}`);
   }
 };
